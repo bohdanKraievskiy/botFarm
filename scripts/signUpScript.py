@@ -48,9 +48,15 @@ def generate_random_user():
     first_name = user_data['name']['first']
     last_name = user_data['name']['last']
     email = user_data['email']
-
-    styles = ['friendly', 'serious', 'funny', 'formal']
-    topics = ["music", "movies", "books", "technology", "science", "politics", "memes", "jokes"]
+    styles = [
+        'friendly', 'serious', 'funny', 'formal', 'informal', 'motivational',
+        'inspirational', 'educational', 'thoughtful'
+    ]
+    topics = [
+        "music", "movies", "books", "technology", "science", "politics",
+        "memes", "jokes", "travel", "food", "fitness", "health", "art",
+        "history", "philosophy", "nature", "sports"
+    ]
     message_types = ["friendship", "news", "memes", "jokes"]
 
     style = random.choice(styles)
