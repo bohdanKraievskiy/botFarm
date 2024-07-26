@@ -1,6 +1,6 @@
 import random
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -8,13 +8,14 @@ from scripts.loginScript import login
 from scripts.postScript import post_message
 from scripts.db_utils import get_random_user
 from messageGenerator import generate_message_with_hashtags, fetch_news
-
+from webdriver_manager.chrome import ChromeDriverManager
 # Вказати шлях до драйвера
-chrome_driver_path = 'chromedriver-win64/chromedriver.exe'  # Змініть на шлях до вашого ChromeDriver
-options = Options()
-# Додайте необхідні опції, наприклад headless режим
-# options.add_argument("--headless")
-service = Service(chrome_driver_path)
+chrome_driver_path = '/usr/local/bin/chromedriver'  # Змініть на шлях до вашого ChromeDriver
+options = webdriver.ChromeOptions()
+options.add_argument('--headless')
+options.add_argument('--no-sandbox')
+options.add_argument('--disable-dev-shm-usage')
+service = ChromeService(executable_path=ChromeDriverManager().install())
 
 def perform_actions_for_user(driver, username, password, style, topics, used_messages, used_template_ids):
     try:
@@ -49,7 +50,7 @@ used_template_ids = set()
 random_user = get_random_user()
 if random_user:
     username, password, style, topics = random_user
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(service=service, options=options)
     perform_actions_for_user(driver, username, password, style, topics, used_messages, used_template_ids)
     driver.quit()
 else:

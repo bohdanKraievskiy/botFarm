@@ -3,16 +3,15 @@ import time
 import subprocess
 
 def run_login_and_post_script():
-    subprocess.run(["python", "loginAndPost.py"])
+    subprocess.run(["python3", "loginAndPost.py"])
 
 def run_signup_script():
-    subprocess.run(["python", "signUp.py"])
+    subprocess.run(["python3", "signUp.py"])
 
-# Schedule the login and post script to run every 4 hours
-schedule.every(4).hours.do(run_login_and_post_script)
+schedule.every(10).minutes.do(run_login_and_post_script)
 
-# Schedule the sign-up script to run every 6 hours
-schedule.every(6).hours.do(run_signup_script)
+# Schedule the sign-up script to run twice a day (every 12 hours)
+schedule.every(12).hours.do(run_signup_script)
 
 while True:
     schedule.run_pending()

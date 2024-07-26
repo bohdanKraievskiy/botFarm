@@ -107,14 +107,18 @@ def register(driver, conn):
 
     save_user_to_db(conn, first_name, last_name, email, password, bio, style, ','.join(topics), message_type)
 
-    WebDriverWait(driver, 20).until(
+     # Очікування зникнення блокуючого елемента
+    WebDriverWait(driver, 40).until(
         EC.invisibility_of_element_located((By.CLASS_NAME, 'main-preloader'))
     )
 
-    # Click the "Skip and continue" button
-    WebDriverWait(driver, 20).until(
+    # Очікування і натискання кнопки через JavaScript
+    skip_button = WebDriverWait(driver, 30).until(
         EC.element_to_be_clickable((By.XPATH, '//button[contains(text(),"Skip and continue")]'))
-    ).click()
+    )
+    time.sleep(2)
+    driver.execute_script("arguments[0].click();", skip_button) 
+
 
     # Fill profile details
     lname_input = WebDriverWait(driver, 10).until(
