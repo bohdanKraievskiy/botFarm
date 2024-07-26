@@ -8,6 +8,7 @@ def run_login_and_post_script():
 	
 def run_signup_script():
     subprocess.run(["python3", "signUp.py"])
+    print("New bot created!")
 
 schedule.every(1).minutes.do(run_login_and_post_script)
 
