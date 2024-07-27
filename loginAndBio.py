@@ -14,14 +14,16 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 chrome_driver_path = '/usr/local/bin/chromedriver'  # Змініть на шлях до вашого ChromeDriver
 options = webdriver.ChromeOptions()
-
+options.add_argument('--headless')
+options.add_argument('--no-sandbox')
+options.add_argument('--disable-dev-shm-usage')
 service = ChromeService(executable_path=ChromeDriverManager().install())
 
 def perform_actions_for_user(driver, username, password, style, topics, used_messages, used_template_ids):
     try:
         # Виклик функції логіну
         login(driver, username, password)
-
+	
         # Очікування переходу на сторінку після входу
         WebDriverWait(driver, 10).until(
             EC.url_to_be('https://chatter.al/home')
