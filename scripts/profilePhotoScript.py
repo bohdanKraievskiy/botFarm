@@ -31,14 +31,32 @@ def change_profile_photo(driver, username):
     )
 
     try:
-        upload_button = WebDriverWait(driver, 20).until(
-            EC.element_to_be_clickable((By.CLASS_NAME, 'profile-avatar'))
-        )
+        # Спочатку знайдемо всі кнопки з класом "profile-avatar"
+        avatar_buttons = driver.find_elements(By.XPATH, '//*[@id="vue-profile-cover-app"]/div[3]')
+
+        # Потім знайдемо шапку профілю
+        profile_header = driver.find_element(By.XPATH, '//*[@id="vue-profile-cover-app"]/div[1]')
+        upload_button = None
+        # Виберемо кнопку, яка не є дочірнім елементом шапки профілю
+        for button in avatar_buttons:
+            if not profile_header in button.find_elements(By.XPATH,
+                                                          './ancestor::div[@id="vue-profile-cover-app"]/div[1]'):
+                upload_button = button
+                break
+
+        if upload_button:
+            # Прокрутка до кнопки профілю перед натисканням
+            driver.execute_script("arguments[0].scrollIntoView(true);", upload_button)
+
+            # Використання JavaScript для натискання
+            driver.execute_script("arguments[0].click();", upload_button)
+        else:
+            print("Відповідну кнопку не знайдено.")
+
     except Exception as e:
-        print("Error finding upload button by class name:", e)
+        print("Error finding upload button:", e)
         raise
 
-    driver.execute_script("arguments[0].click();", upload_button)
     print("Clicked upload button")
 
     upload_input = WebDriverWait(driver, 20).until(
