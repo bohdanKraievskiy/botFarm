@@ -9,11 +9,17 @@ def run_login_and_post_script():
 def run_signup_script():
     subprocess.run(["python3", "signUp.py"])
     print("New bot created!")
+def run_login_and_bio_script():
+    subprocess.run(["python3","loginAndBio.py"])
+    print("Bio was trying to change")
+
 
 schedule.every(1).minutes.do(run_login_and_post_script)
 
 # Schedule the sign-up script to run twice a day (every 12 hours)
-schedule.every(10).minutes.do(run_signup_script)
+schedule.every(1).hours.do(run_signup_script)
+
+schedule.every(1).minutes.do(run_login_and_bio_script)
 
 while True:
     schedule.run_pending()
