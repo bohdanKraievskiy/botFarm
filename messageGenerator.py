@@ -49,7 +49,7 @@ def fetch_news(used_template_ids):
                 used_template_ids.add(template_id)
                 return template.format(title=title, link=link)
 
-    return ""
+    return "What do you think about latest News? omg.."
 
 def reset_used_template_ids(style):
     conn = sqlite3.connect('message_templates.db')
