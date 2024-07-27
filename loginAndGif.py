@@ -41,13 +41,13 @@ def perform_actions_for_user(driver, username, password, style, topics, used_mes
 
 
 # Отримати одного випадкового користувача з бази даних
-    used_messages = set()
-    used_template_ids = set()
-    random_user = get_random_user()
-    if random_user:
-        username, password, style, topics = random_user
-        driver = webdriver.Chrome(service=service, options=options)
-        perform_actions_for_user(driver, username, password, style, topics, used_messages, used_template_ids)
-        driver.quit()
-    else:
-        print("No users found.")
+used_messages = set()
+used_template_ids = set()
+random_user = get_random_user()
+if random_user:
+    username, password, style, topics = random_user
+    driver = webdriver.Chrome(service=service, options=options)
+    perform_actions_for_user(driver, username, password, style, topics, used_messages, used_template_ids)
+    driver.quit()
+else:
+    print("No users found.")
