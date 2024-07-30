@@ -17,14 +17,14 @@ def run_login_and_gif_script():
     print("Gif was trying to send!")
 
 
-schedule.every(20).minutes.do(run_login_and_post_script)
+schedule.every(10).minutes.do(run_login_and_post_script)
 
 # Schedule the sign-up script to run twice a day (every 12 hours)
 schedule.every(12).hours.do(run_signup_script)
 
 schedule.every(20).minutes.do(run_login_and_bio_script)
 
-schedule.every(30).minutes.do(run_login_and_gif_script)
+schedule.every(10).minutes.do(run_login_and_gif_script)
 while True:
     schedule.run_pending()
     time.sleep(1)
