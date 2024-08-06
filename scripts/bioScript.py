@@ -46,7 +46,9 @@ def login(driver, username, password):
 
 def change_bio(driver, new_bio,username):
     driver.get('https://chatter.al/settings/bio')
-
+    WebDriverWait(driver, 40).until(
+        EC.invisibility_of_element_located((By.CLASS_NAME, 'main-preloader'))
+    )	
     bio_textarea = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, 'bio'))
     )

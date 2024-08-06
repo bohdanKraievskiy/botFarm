@@ -16,7 +16,10 @@ def login(driver, username, password):
 
     email_input.send_keys(username)  # Замініть на ваш email або ім'я користувача
     password_input.send_keys(password)  # Замініть на ваш пароль
-
+       # Очікування зникнення блокуючого елемента
+    WebDriverWait(driver, 40).until(
+        EC.invisibility_of_element_located((By.CLASS_NAME, 'main-preloader'))
+    )
     login_button = WebDriverWait(driver, 10).until(
         EC.element_to_be_clickable((By.XPATH, '//button[contains(text(),"Login")]'))
     )
