@@ -1,23 +1,9 @@
 import time
 import sqlite3
 import random
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from playwright.sync_api import sync_playwright
 from scripts.loginScript import login
 from scripts.db_utils import get_random_user
-from webdriver_manager.chrome import ChromeDriverManager
-
-# ChromeDriver setup
-chrome_driver_path = 'chromedriver-win64/chromedriver.exe'  # Update to your path
-options = Options()
-
-service = ChromeService(executable_path=ChromeDriverManager().install())
-
 def get_random_comment():
     conn = sqlite3.connect('./message_templates.db')
     cursor = conn.cursor()
@@ -26,77 +12,64 @@ def get_random_comment():
     conn.close()
     return random.choice(templates)[0]
 
-def post_comment(driver):
+def post_comment(page):
     try:
-
         # Click on the comment button
-        comment_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//button[contains(@class, "ctrls-item")]/a[contains(@href, "thread")]'))
-        )
-        driver.execute_script("arguments[0].click();", comment_button)
+        comment_button = page.wait_for_selector('//button[contains(@class, "ctrls-item")]/a[contains(@href, "thread")]', timeout=10000)
+        comment_button.click()
 
         # Scroll down to ensure elements are in the viewport
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(3)  # Wait for 3 seconds to ensure elements are loaded
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(3)  # Wait for 3 seconds to ensure elements are loaded again
+        page.evaluate("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(3)
+        page.evaluate("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(3)
 
         # Ensure elements are interactable
         time.sleep(2)
 
         # Locate the reply button by a more specific XPath
-        reply_button = WebDriverWait(driver, 40).until(
-            EC.element_to_be_clickable(
-                (By.XPATH, '//button[@class="ctrls-item" and contains(@onclick, "SMColibri.pub_reply")]'))
-        )
-        driver.execute_script("arguments[0].scrollIntoView(true);", reply_button)
+        reply_button = page.wait_for_selector('//button[@class="ctrls-item" and contains(@onclick, "SMColibri.pub_reply")]', timeout=40000)
+        reply_button.scroll_into_view_if_needed()
         time.sleep(1)
-
-        # Click the reply button using JavaScript to avoid "element not interactable" issue
-        driver.execute_script("arguments[0].click();", reply_button)
+        reply_button.click()
 
         # Wait for the comment box to appear
-        comment_box = WebDriverWait(driver, 50).until(
-            EC.presence_of_element_located((By.XPATH, '//textarea[@name="post_text"]'))
-        )
+        comment_box = page.wait_for_selector('//textarea[@name="post_text"]', timeout=50000)
         time.sleep(1)
-        comment_box.send_keys(get_random_comment())
+        comment_box.fill(get_random_comment())
 
         # Submit the comment
-        publish_button = WebDriverWait(driver, 50).until(
-            EC.element_to_be_clickable((By.XPATH, '//button[contains(text(),"Publish")]'))
-        )
+        publish_button = page.wait_for_selector('//button[contains(text(),"Publish")]', timeout=50000)
         time.sleep(1)
-        driver.execute_script("arguments[0].click();", publish_button)
+        publish_button.click()
 
         print("Successfully posted a comment!")
     except Exception as e:
         print(f"An error occurred while posting a comment: {e}")
 
-def perform_actions_for_user(driver, username, password):
-    try:
+def perform_actions_for_user(username, password):
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False)  # Set headless=True to run without UI
+        page = browser.new_page()
+
         # Log in the user
-        login(driver, username, password)
+        page.goto('https://chatter.al/guest')
+        page.fill('input[name="email"]', username)
+        page.fill('input[name="password"]', password)
+        page.click('button.btn.btn-custom.main-inline.lg.btn-block')
 
         # Wait for the home page to load
-        WebDriverWait(driver, 10).until(
-            EC.url_to_be('https://chatter.al/home')
-        )
-        driver.get('https://chatter.al/search')
-        # Post a comment on the latest post
-        post_comment(driver)
+        page.wait_for_url('https://chatter.al/home')
+        page.goto('https://chatter.al/search')
 
-    except Exception as e:
-        print(f"An error occurred for user {username}: {e}")
-    finally:
-        # Ensure we start fresh for the next user
-        driver.delete_all_cookies()
+        # Post a comment on the latest post
+        post_comment(page)
+
+        browser.close()
 
 # Get a random user from the database
 random_user = get_random_user()
 if random_user:
     username = "Lyubomir"
     password = "_qUxC*:Upym6"
-    driver = webdriver.Chrome(service=service, options=options)
-    perform_actions_for_user(driver, username, password)
-    driver.quit()
+    perform_actions_for_user(username, password)
