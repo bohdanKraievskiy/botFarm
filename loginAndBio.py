@@ -23,7 +23,7 @@ def perform_actions_for_user(driver, username, password, style, topics, used_mes
     try:
         # Виклик функції логіну
         login(driver, username, password)
-
+	
         # Очікування переходу на сторінку після входу
         WebDriverWait(driver, 20).until(
             EC.url_to_be('https://chatter.al/home')
