@@ -2,7 +2,7 @@ import sqlite3
 
 
 def get_random_user():
-    conn = sqlite3.connect('users.db')
+    conn = sqlite3.connect('./users.db')
     cursor = conn.cursor()
     cursor.execute('SELECT first_name, password, style, topics FROM users ORDER BY RANDOM() LIMIT 1')
     user = cursor.fetchone()
