@@ -222,13 +222,12 @@ service = ChromeService(executable_path=ChromeDriverManager().install())
 used_messages = set()
 used_template_ids = set()
 
-for attempt in range(10):
-    random_user = get_new_random_user()
-    if random_user:
-        first_name, last_name, email, password, bio, style, topics, message_type, topic, keywords = random_user
-        driver = webdriver.Chrome(service=service, options=options)
-        perform_actions_for_user(driver, email, password, style, topics, used_messages, used_template_ids)
-        driver.quit()
-    else:
-        print("No users found.")
-        break  # Exit the loop if no more users are available
+
+random_user = get_new_random_user()
+if random_user:
+    first_name, last_name, email, password, bio, style, topics, message_type, topic, keywords = random_user
+    driver = webdriver.Chrome(service=service, options=options)
+    perform_actions_for_user(driver, email, password, style, topics, used_messages, used_template_ids)
+    driver.quit()
+else:
+    print("No users found.")

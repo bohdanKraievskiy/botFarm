@@ -120,13 +120,21 @@ def fetch_news(used_template_ids):
                 used_template_ids.add(template_id)
                 return template.format(title=title, link=link)
 
-    return "What do you think about the latest news? Check it out!"
 
-# Example usage
-used_template_ids = set()
-for _ in range(10):
-    news_message = fetch_news(used_template_ids)
-    print(news_message)
+    fallback_phrases = [
+        "What do you think about the latest news? Check it out!",
+        "Couldn't fetch the news right now, but stay tuned for updates!",
+        "Stay informed! More news coming your way soon.",
+        "Sorry, no news updates available at the moment. Please check back later.",
+        "Unable to get the latest news. How about checking out the headlines on your favorite news site?",
+        "Our news feed is currently down. Stay tuned for more updates!",
+        "News update is unavailable. Make sure to keep yourself informed!",
+        "We are experiencing technical difficulties with our news feed. Thank you for your patience!",
+        "No news at the moment. Stay tuned!",
+        "Stay updated! We'll bring you the news shortly.",
+    ]
+
+    return random.choice(fallback_phrases)
 
 
 def reset_used_template_ids(style):
