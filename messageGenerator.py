@@ -20,12 +20,83 @@ def get_news_templates(style):
     conn.close()
     return templates
 
+import random
+import requests
+
+import random
+import requests
+
+def get_news_templates(template_type):
+    # Replace this function with your logic to fetch templates based on the type
+    return [(1, "Breaking News: {title} - Read more here: {link}"),
+            (2, "Headline: {title}. Details: {link}")] if template_type == 'news_with_description' else \
+           [(3, "{title} - {link}"),
+            (4, "{title} {link}")]
+
 def fetch_news(used_template_ids):
-    nytimes_api_key = 'sVRrzlbvV8nYwzRGUOWHhJdVAIXYVYrg'
-    url = f'https://api.nytimes.com/svc/topstories/v2/home.json?api-key={nytimes_api_key}'
-    response = requests.get(url)
+    # List of available news sources and their APIs
+    news_sources = [
+        {
+            'name': 'New York Times',
+            'endpoint': 'https://api.nytimes.com/svc/topstories/v2/home.json',
+            'api_key': 'sVRrzlbvV8nYwzRGUOWHhJdVAIXYVYrg',
+            'params': {}
+        },
+        {
+            'name': 'The Guardian',
+            'endpoint': 'https://content.guardianapis.com/search',
+            'api_key': '0bcb6bbb-6262-4f40-8320-d4f0d366e4ad',
+            'params': {}
+        },
+        {
+            'name': 'BBC News',
+            'endpoint': 'https://bbc-api.vercel.app/latest?lang=english',
+            'params': {}
+        },
+        {
+            'name': 'Fox News',
+            'endpoint': 'https://riad-news-api.vercel.app/api/news',
+            'params': {}
+        },
+        {
+            'name': 'NBC News',
+            'endpoint': 'https://newsapi.org/v2/everything?domains=wsj.com&apiKey=3d5b9dcf0d4a4981a0ef655a71bfb32f',
+            'params': {}
+        },
+        {
+            'name': 'CBS News',
+            'endpoint': 'https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=3d5b9dcf0d4a4981a0ef655a71bfb32f',
+            'params': {}
+        },
+        {
+            'name': 'ABC News',
+            'endpoint': 'https://newsapi.org/v2/everything?q=apple&from=2024-08-12&to=2024-08-12&sortBy=popularity&apiKey=3d5b9dcf0d4a4981a0ef655a71bfb32f',
+            'params': {}
+        },
+        {
+            'name': 'USA Today',
+            'endpoint': 'https://newsapi.org/v2/everything?q=tesla&from=2024-07-13&sortBy=publishedAt&apiKey=3d5b9dcf0d4a4981a0ef655a71bfb32f',
+            'params': {}
+        },
+        {
+            'name': 'Los Angeles Times',
+            'endpoint': 'https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=3d5b9dcf0d4a4981a0ef655a71bfb32f',
+            'params': {}
+        }
+    ]
+
+    # Select a random news source
+    source = random.choice(news_sources)
+    url = source['endpoint']
+    api_key = source.get('api_key')
+    params = source.get('params', {})
+    if api_key:
+        params['apiKey'] = api_key
+
+    # Fetch news from the selected source
+    response = requests.get(url, params=params)
     if response.status_code == 200:
-        articles = response.json().get('results', [])
+        articles = response.json().get('articles', [])  # Adjust based on API response structure
         if articles:
             article = random.choice(articles)
             title = article.get('title', 'News')
@@ -49,7 +120,14 @@ def fetch_news(used_template_ids):
                 used_template_ids.add(template_id)
                 return template.format(title=title, link=link)
 
-    return "What do you think about latest News? omg.."
+    return "What do you think about the latest news? Check it out!"
+
+# Example usage
+used_template_ids = set()
+for _ in range(10):
+    news_message = fetch_news(used_template_ids)
+    print(news_message)
+
 
 def reset_used_template_ids(style):
     conn = sqlite3.connect('message_templates.db')

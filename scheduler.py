@@ -19,8 +19,14 @@ def run_login_and_comment_script():
     subprocess.run(["python3","loginAndComment.py"])
     print("Comment was trying to send!")
 
+def run_login_and_post2_script():
+    subprocess.run(["python3","loginAndPost2.py"])
+    print("Comment was trying to send!")
+
 
 schedule.every(2).minutes.do(run_login_and_post_script)
+
+schedule.every(2).minutes.do(run_login_and_post2_script)
 
 # Schedule the sign-up script to run twice a day (every 12 hours)
 schedule.every(12).hours.do(run_signup_script)
