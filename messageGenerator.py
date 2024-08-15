@@ -134,7 +134,7 @@ def fetch_news(used_template_ids):
         "Stay updated! We'll bring you the news shortly.",
     ]
 
-    return random.choice(fallback_phrases)
+    return ''
 
 
 def reset_used_template_ids(style):
